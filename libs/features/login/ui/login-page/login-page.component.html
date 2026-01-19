@@ -1,0 +1,91 @@
+<jh-auth-page-layout heading="">
+  <div auth-left class="promo">
+    <div class="promo__logo-row">
+      <img class="promo__logo-image" src="/assets/logo.svg" alt="JobHopper" />
+    </div>
+
+    <h1 class="promo__title">Witaj ponownie</h1>
+    <p class="promo__subtitle">
+      Zaloguj się, aby kontynuować korzystanie z JobHopper.
+    </p>
+
+    <ul class="promo__items">
+      <li class="promo__item">
+        <div class="promo__item-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+        <div class="promo__item-text">
+          <div class="promo__item-title">Znajdź idealną pracę</div>
+          <div class="promo__item-description">
+            Przeglądaj oferty dopasowane do Twojego doświadczenia.
+          </div>
+        </div>
+      </li>
+      <li class="promo__item">
+        <div class="promo__item-icon">
+          <mat-icon>notifications</mat-icon>
+        </div>
+        <div class="promo__item-text">
+          <div class="promo__item-title">Otrzymuj powiadomienia</div>
+          <div class="promo__item-description">
+            Bądź na bieżąco z najnowszymi ofertami pracy.
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div auth-right class="form">
+    <h2 class="form__title">Logowanie</h2>
+
+    <form class="form__body" [formGroup]="form" (ngSubmit)="handleSubmit()">
+      <mat-form-field
+        appearance="outline"
+        class="form__field"
+        floatLabel="always"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Adres e-mail</mat-label>
+        <input matInput placeholder="Uzupełnij" formControlName="email" type="email" />
+        @if (emailError()) {
+          <mat-error>{{ emailError() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="form__field"
+        floatLabel="always"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Hasło</mat-label>
+        <input matInput placeholder="Uzupełnij" formControlName="password" type="password" />
+        @if (passwordError()) {
+          <mat-error>{{ passwordError() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form__checkbox-group">
+        <mat-checkbox color="primary" formControlName="rememberMe">
+          Zapamiętaj mnie na tym urządzeniu
+        </mat-checkbox>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="form__submit"
+        type="submit"
+        [disabled]="!form.valid || uiState().submitting"
+      >
+        Zaloguj się
+      </button>
+    </form>
+
+    <p class="form__footer">
+      Nie masz jeszcze konta?
+      <a href="/register/employee" class="form__footer-link">Utwórz konto</a>
+    </p>
+  </div>
+</jh-auth-page-layout>
+

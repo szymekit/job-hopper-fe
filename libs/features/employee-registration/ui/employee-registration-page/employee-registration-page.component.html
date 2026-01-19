@@ -1,0 +1,138 @@
+<jh-auth-page-layout heading="Rejestracja pracownik">
+  <div auth-left class="promo">
+    <div class="promo__logo-row">
+      <img class="promo__logo-image" src="/assets/logo.svg" alt="JobHopper" />
+    </div>
+
+    <h1 class="promo__title">Witaj w JobHopper</h1>
+    <p class="promo__subtitle">
+      Miejscu, w którym łączymy pracodawców z kandydatami.
+    </p>
+
+    <ul class="promo__items">
+      <li class="promo__item">
+        <div class="promo__item-icon">
+          <mat-icon>edit</mat-icon>
+        </div>
+        <div class="promo__item-text">
+          <div class="promo__item-title">Twórz treści</div>
+          <div class="promo__item-description">
+            Tincidunt nunc pulvinar sapien et. Vitae purus faucibus ornare suspendisse sed nisi lacus
+            sed viverra.
+          </div>
+        </div>
+      </li>
+      <li class="promo__item">
+        <div class="promo__item-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="promo__item-text">
+          <div class="promo__item-title">Uzupełnij profil</div>
+          <div class="promo__item-description">
+            Scelerisque purus semper eget duis at tellus at urna. Sed risus pretium quam vulputate.
+          </div>
+        </div>
+      </li>
+      <li class="promo__item">
+        <div class="promo__item-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+        <div class="promo__item-text">
+          <div class="promo__item-title">Przeglądaj oferty pracy</div>
+          <div class="promo__item-description">
+            Egestas sed tempus urna et. Auctor elit sed vulputate mi sit amet mauris commodo.
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div auth-right class="form">
+    <h2 class="form__title">Utwórz konto pracownika</h2>
+
+    <form class="form__body" [formGroup]="form" (ngSubmit)="handleSubmit()">
+      <mat-form-field
+        appearance="outline"
+        class="form__field"
+        floatLabel="always"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Adres e-mail</mat-label>
+        <input matInput placeholder="Uzupełnij" formControlName="email" type="email" />
+        @if (emailError()) {
+          <mat-error>{{ emailError() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="form__field"
+        floatLabel="always"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Hasło</mat-label>
+        <input matInput placeholder="Uzupełnij" formControlName="password" type="password" />
+        @if (passwordError()) {
+          <mat-error>{{ passwordError() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field
+        appearance="outline"
+        class="form__field"
+        floatLabel="always"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Powtórz hasło</mat-label>
+        <input matInput placeholder="Uzupełnij" formControlName="confirmPassword" type="password" />
+        @if (confirmPasswordError()) {
+          <mat-error>{{ confirmPasswordError() }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form__checkbox-group">
+        <mat-checkbox color="primary" formControlName="acceptTerms">
+          Akceptuję politykę prywatności i regulamin aplikacji.
+        </mat-checkbox>
+        <mat-checkbox color="primary" formControlName="acceptMarketing">
+          Wyrażam zgodę na otrzymywanie treści marketingowych.
+        </mat-checkbox>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="form__submit"
+        type="submit"
+        [disabled]="!form.valid || uiState().submitting"
+      >
+        Utwórz konto
+      </button>
+    </form>
+
+    <div class="form__separator">
+      <span class="form__separator-line"></span>
+      <span class="form__separator-label">lub</span>
+      <span class="form__separator-line"></span>
+    </div>
+
+    <div class="form__social">
+      <button mat-stroked-button class="form__social-button form__social-button--google" type="button">
+        <span class="form__social-label">Zaloguj za pomocą Google</span>
+      </button>
+      <button
+        mat-stroked-button
+        class="form__social-button form__social-button--facebook"
+        type="button"
+      >
+        <span class="form__social-label">Zaloguj za Facebook</span>
+      </button>
+    </div>
+
+    <p class="form__footer">
+      Posiadasz konto?
+      <a href="#" class="form__footer-link">Zaloguj się</a>
+    </p>
+  </div>
+</jh-auth-page-layout>
+

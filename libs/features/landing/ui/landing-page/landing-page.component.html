@@ -1,0 +1,261 @@
+<div class="landing-page">
+  <section class="landing-hero">
+    <div class="landing-hero__container">
+      <button class="landing-hero__badge">
+        <mat-icon>local_fire_department</mat-icon>
+        <span>{{ data().hero.badge }}</span>
+      </button>
+      <h1 class="landing-hero__title">{{ data().hero.title }}</h1>
+      <div class="landing-hero__image">
+        <img [src]="data().hero.imageUrl" alt="" />
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section">
+    <div class="landing-section__container">
+      <h2 class="landing-section__title">Sprawdź popularne kategorie zleceń 🔥</h2>
+      <div class="landing-categories">
+        @for (category of data().categories; track category.id) {
+          <div class="landing-category" [class]="getCategoryColorClass(category.color)">
+            <div class="landing-category__content">
+              <mat-icon class="landing-category__icon">{{ getCategoryIcon(category.icon) }}</mat-icon>
+              <div class="landing-category__info">
+                <h3 class="landing-category__title">{{ category.title }}</h3>
+                <span class="landing-category__count">{{ category.offerCount }}</span>
+              </div>
+            </div>
+            <button class="landing-category__menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-section--offers">
+    <div class="landing-section__container">
+      <h2 class="landing-section__title">Aktualne oferty zleceń</h2>
+      <div class="landing-offers__tabs">
+        <button
+          class="landing-offers__tab"
+          [class.landing-offers__tab--active]="activeTab() === 'offers'"
+        >
+          Zobacz zlecenia
+        </button>
+        <button
+          class="landing-offers__tab"
+          [class.landing-offers__tab--active]="activeTab() === 'community'"
+        >
+          Poznaj społeczność
+        </button>
+      </div>
+      <div class="landing-offers__filters">
+        <button
+          class="landing-offers__filter"
+          [class.landing-offers__filter--active]="activeFilter() === 'selected'"
+        >
+          <mat-icon>search</mat-icon>
+          <span>Wybrane</span>
+        </button>
+        <button
+          class="landing-offers__filter"
+          [class.landing-offers__filter--active]="activeFilter() === 'observed'"
+        >
+          <mat-icon>visibility</mat-icon>
+          <span>Obserwowane</span>
+        </button>
+        <button
+          class="landing-offers__filter"
+          [class.landing-offers__filter--active]="activeFilter() === 'promoted'"
+        >
+          <mat-icon>bar_chart</mat-icon>
+          <span>Promowane</span>
+        </button>
+        <button
+          class="landing-offers__filter"
+          [class.landing-offers__filter--active]="activeFilter() === 'popular'"
+        >
+          <mat-icon>star</mat-icon>
+          <span>Najpopularniejsze</span>
+        </button>
+      </div>
+      <div class="landing-offers__grid">
+        @for (offer of data().jobOffers; track offer.id) {
+          <a [routerLink]="['/job', offer.id]" class="landing-offer-card">
+            @if (offer.isPopular) {
+              <span class="landing-offer-card__badge">Popularne</span>
+            }
+            <div class="landing-offer-card__header">
+              <img class="landing-offer-card__logo" [src]="offer.logoUrl" [alt]="offer.title" />
+            </div>
+            <h3 class="landing-offer-card__title">{{ offer.title }}</h3>
+            <p class="landing-offer-card__meta">{{ offer.location }}, {{ offer.rate }}</p>
+            <div class="landing-offer-card__tags">
+              @for (tag of offer.tags; track tag) {
+                <span class="landing-offer-card__tag">{{ tag }}</span>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-section--steps">
+    <div class="landing-section__container">
+      <h2 class="landing-section__title">Jak to działa?</h2>
+      <div class="landing-steps">
+        @for (step of data().steps; track step.id; let i = $index) {
+          <div class="landing-step">
+            <div class="landing-step__number">{{ i + 1 }}</div>
+            <h3 class="landing-step__title">{{ step.title }}</h3>
+            <p class="landing-step__description">{{ step.description }}</p>
+            <div class="landing-step__image">
+              <img [src]="step.imageUrl" [alt]="step.title" />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  @for (section of data().contentSections; track section.id) {
+    <section class="landing-section landing-section--content">
+      <div class="landing-section__container">
+        <div
+          class="landing-content"
+          [class.landing-content--reverse]="section.imagePosition === 'right'"
+        >
+          <div class="landing-content__text">
+            <span class="landing-content__badge">{{ section.badge }}</span>
+            <h2 class="landing-content__title">{{ section.title }}</h2>
+            <p class="landing-content__description">{{ section.description }}</p>
+            <ul class="landing-content__features">
+              @for (feature of section.features; track feature.id) {
+                <li class="landing-content__feature">
+                  <mat-icon class="landing-content__feature-icon">check_circle</mat-icon>
+                  <div class="landing-content__feature-content">
+                    <h4 class="landing-content__feature-title">{{ feature.title }}</h4>
+                    <p class="landing-content__feature-description">{{ feature.description }}</p>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+          <div class="landing-content__image">
+            <img [src]="section.imageUrl" [alt]="section.title" />
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <section class="landing-section landing-section--contact">
+    <div class="landing-section__container">
+      <div class="landing-contact">
+        <div class="landing-contact__left">
+          <div class="landing-contact__graphic">
+            <img
+              src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80"
+              alt="JobHooper"
+            />
+            <div class="landing-contact__brand">
+              <h3 class="landing-contact__brand-name">{{ data().footer.companyInfo.name }}</h3>
+              <p class="landing-contact__brand-tagline">{{ data().footer.companyInfo.tagline }}</p>
+              <div class="landing-contact__social">
+                <a href="#" class="landing-contact__social-link">
+                  <mat-icon>close</mat-icon>
+                </a>
+                <a href="#" class="landing-contact__social-link">
+                  <mat-icon>business</mat-icon>
+                </a>
+                <a href="#" class="landing-contact__social-link">
+                  <mat-icon>photo_camera</mat-icon>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="landing-contact__right">
+          <h2 class="landing-contact__title">Czekamy na Twoją wiadomość 😉</h2>
+          <p class="landing-contact__description">
+            Odezwiemy się do 48 godz. Pamiętaj, że wysyłając do nas wiadomość będziemy przetwarzać
+            Twoje dane zgodnie z <strong>polityką prywatności</strong>.
+          </p>
+          <form [formGroup]="contactForm" (ngSubmit)="handleContactSubmit()" class="landing-contact__form">
+            <div class="landing-contact__form-row">
+              <mat-form-field appearance="outline" class="landing-contact__form-field">
+                <mat-label>Imię</mat-label>
+                <input matInput formControlName="firstName" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="landing-contact__form-field">
+                <mat-label>Nazwisko</mat-label>
+                <input matInput formControlName="lastName" />
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="landing-contact__form-field landing-contact__form-field--full">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="landing-contact__form-field landing-contact__form-field--full">
+              <mat-label>Twoja wiadomość</mat-label>
+              <textarea matInput formControlName="message" rows="4"></textarea>
+            </mat-form-field>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="landing-contact__submit"
+              [disabled]="!contactForm.valid"
+            >
+              <mat-icon>send</mat-icon>
+              <span>Wyślij</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div class="landing-footer__container">
+      <div class="landing-footer__top">
+        <div class="landing-footer__company">
+          <h3 class="landing-footer__company-name">{{ data().footer.companyInfo.name }}</h3>
+          <p class="landing-footer__company-tagline">{{ data().footer.companyInfo.tagline }}</p>
+          <p class="landing-footer__company-address">{{ data().footer.companyInfo.address }}</p>
+        </div>
+        <div class="landing-footer__links">
+          @for (column of data().footer.linkColumns; track column.title) {
+            <div class="landing-footer__link-column">
+              <h4 class="landing-footer__link-title">{{ column.title }}</h4>
+              <ul class="landing-footer__link-list">
+                @for (link of column.links; track link) {
+                  <li>
+                    <a href="#" class="landing-footer__link">{{ link }}</a>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="landing-footer__bottom">
+        <p class="landing-footer__copyright">{{ data().footer.copyright }}</p>
+        <div class="landing-footer__social">
+          <a href="#" class="landing-footer__social-link">
+            <mat-icon>close</mat-icon>
+          </a>
+          <a href="#" class="landing-footer__social-link">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="landing-footer__social-link">
+            <mat-icon>play_circle</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

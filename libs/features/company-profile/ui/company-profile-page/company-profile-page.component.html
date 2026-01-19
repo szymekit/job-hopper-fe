@@ -1,0 +1,165 @@
+<div class="company-profile-page">
+  <div class="company-profile-page__container">
+    <div class="company-profile-page__card">
+      <div class="company-profile-page__cover">
+        <img class="company-profile-page__cover-image" [src]="data().header.coverUrl" alt="" />
+        <div class="company-profile-page__cover-overlay"></div>
+        <div class="company-profile-page__header-top">
+          <a href="#" class="company-profile-page__nav-link">Na stronę www</a>
+          <a href="#" class="company-profile-page__nav-link">Obserwuj</a>
+          <button class="company-profile-page__more-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <div class="company-profile-page__header-content">
+          <div class="company-profile-page__logo-wrapper">
+            <img class="company-profile-page__logo" [src]="data().header.logoUrl" alt="{{ data().header.companyName }}" />
+          </div>
+          <div class="company-profile-page__company-info">
+            <h1 class="company-profile-page__company-name">{{ data().header.companyName }}</h1>
+            <p class="company-profile-page__tagline">
+              {{ data().header.tagline }}
+              <span class="company-profile-page__heart">💙</span>
+            </p>
+            <div class="company-profile-page__details">
+              <span>{{ data().header.companyType }}</span>
+              <span>{{ data().header.location }}</span>
+              <span>{{ data().header.country }}</span>
+              <span>{{ data().header.employeeCount }}</span>
+            </div>
+            @if (data().header.activeRecruitment) {
+              <a href="#" class="company-profile-page__recruitment-link">AKTYWNA REKRUTACJA</a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="company-profile-page__summary">
+        @for (card of data().summaryCards; track card.id) {
+          <div class="company-profile-page__summary-card">
+            <div class="company-profile-page__summary-label">{{ card.label }}</div>
+            <div class="company-profile-page__summary-value">{{ card.value }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="company-profile-page__navigation">
+        @for (tab of data().navigationTabs; track tab.id) {
+          <button
+            class="company-profile-page__nav-tab"
+            [class.company-profile-page__nav-tab--active]="tab.active"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <div class="company-profile-page__content">
+        <section class="company-section">
+          <header class="company-section__header">
+            <h2 class="company-section__title">O nas</h2>
+          </header>
+          <div class="company-section__body">
+            @for (section of data().aboutSections; track section.id) {
+              <div class="company-about">
+                <h3 class="company-about__subtitle">{{ section.title }}</h3>
+                <p class="company-about__text">{{ section.content }}</p>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="company-section">
+          <header class="company-section__header">
+            <h2 class="company-section__title">Benefity pracownicze</h2>
+          </header>
+          <div class="company-section__body">
+            @for (benefit of data().benefits; track benefit.id) {
+              <div class="company-benefit">
+                <h3 class="company-benefit__title">{{ benefit.title }}</h3>
+                <p class="company-benefit__description">{{ benefit.description }}</p>
+                <div class="company-benefit__tags">
+                  @for (tag of benefit.tags; track tag) {
+                    <span class="company-benefit__tag">{{ tag }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="company-section">
+          <header class="company-section__header">
+            <h2 class="company-section__title">Portfolio firmy</h2>
+          </header>
+          <div class="company-section__body company-section__body--portfolio">
+            @for (item of data().portfolio; track item.id) {
+              <div class="company-portfolio__item">
+                <img [src]="item.imageUrl" [alt]="item.title" />
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="company-section">
+          <header class="company-section__header">
+            <h2 class="company-section__title">Aktywna rekrutacja</h2>
+          </header>
+          <div class="company-section__body">
+            @for (job of data().jobOffers; track job.id) {
+              <div class="company-job">
+                <div class="company-job__header">
+                  <div class="company-job__icon-wrapper">
+                    @if (job.iconUrl) {
+                      <img class="company-job__icon" [src]="job.iconUrl" alt="" />
+                    } @else {
+                      <div class="company-job__icon-placeholder">S</div>
+                    }
+                  </div>
+                  <div class="company-job__title">{{ job.title }}</div>
+                </div>
+                <div class="company-job__meta">
+                  <span>{{ job.companyName }}</span>
+                  <span>{{ job.location }}</span>
+                  <span>{{ job.employeeCount }}</span>
+                  <span>{{ job.activeDays }}</span>
+                </div>
+                <p class="company-job__description">{{ job.description }}</p>
+                <div class="company-job__tags">
+                  @for (tag of job.tags; track tag) {
+                    <span class="company-job__tag">{{ tag }}</span>
+                  }
+                </div>
+                @if (!$last) {
+                  <div class="company-job__divider"></div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="company-section">
+          <header class="company-section__header">
+            <h2 class="company-section__title">Opinie o współpracy z {{ data().header.companyName }}</h2>
+          </header>
+          <div class="company-section__body">
+            <button class="company-reviews__button">{{ data().totalReviews }} opinii</button>
+            @for (review of data().reviews; track review.id) {
+              <div class="company-review">
+                <div class="company-review__header">
+                  @if (review.iconUrl) {
+                    <img class="company-review__icon" [src]="review.iconUrl" alt="" />
+                  } @else {
+                    <div class="company-review__icon-placeholder">A</div>
+                  }
+                  <span class="company-review__author">{{ review.authorInitials }}</span>
+                </div>
+                <p class="company-review__content">{{ review.content }}</p>
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": [
+        "libs/core/*"
+      ],
+      "@shared/ui/*": [
+        "libs/shared/ui/*"
+      ],
+      "@shared/util/*": [
+        "libs/shared/util/*"
+      ],
+      "@features/employee-registration/*": [
+        "libs/features/employee-registration/*"
+      ],
+      "@features/business-registration/*": [
+        "libs/features/business-registration/*"
+      ],
+      "@features/not-found/*": [
+        "libs/features/not-found/*"
+      ],
+      "@features/login/*": [
+        "libs/features/login/*"
+      ],
+      "@features/user-profile/*": [
+        "libs/features/user-profile/*"
+      ],
+      "@features/company-profile/*": [
+        "libs/features/company-profile/*"
+      ],
+      "@features/job-offer/*": [
+        "libs/features/job-offer/*"
+      ],
+      "@features/landing/*": [
+        "libs/features/landing/*"
+      ]
+    },
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
