@@ -1,0 +1,13 @@
+.follow-company-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.follow-company-button--following {
+  color: var(--color-btn-secondary);
+}
+
+.follow-company-button:disabled {
+  opacity: var(--opacity-disabled);
+}

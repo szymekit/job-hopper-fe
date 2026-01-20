@@ -1,0 +1,10 @@
+<button
+  mat-button
+  class="follow-company-button"
+  [class.follow-company-button--following]="following()"
+  (click)="toggleFollow()"
+  [disabled]="loading()"
+>
+  <mat-icon>{{ following() ? 'check_circle' : 'add_circle' }}</mat-icon>
+  <span>{{ following() ? 'Obserwujesz' : 'Obserwuj' }}</span>
+</button>

@@ -35,7 +35,14 @@
   /* COLORS - BADGES */
   --color-badge-orange: #ea580c;
   --color-badge-orange-bg: #fff7ed;
+  --color-badge-orange-text: #7c2d12;
   --color-badge-yellow-bg: #fef3c7;
+  --color-badge-yellow-text: #78350f;
+  --color-badge-green-bg: #d1fae5;
+  --color-badge-green-text: #065f46;
+  --color-badge-green-icon: #10b981;
+  --color-badge-red-bg: #fee2e2;
+  --color-badge-red-text: #991b1b;
   --color-badge-success: #10b981;
 
   /* COLORS - TAG */
@@ -73,6 +80,8 @@
   --font-size-6xl: 32px;
   --font-size-7xl: 40px;
   --font-size-8xl: 48px;
+  --font-size-hero-subtitle: 26px;
+  --font-size-section-title: 22px;
 
   /* TYPOGRAPHY - FONT WEIGHTS */
   --font-weight-regular: 400;
@@ -118,6 +127,7 @@
   --size-icon-sm: 16px;
   --size-icon-md: 18px;
   --size-icon-lg: 20px;
+  --size-icon-xl: 24px;
   --size-avatar-sm: 32px;
   --size-avatar-md: 60px;
   --size-avatar-lg: 80px;
@@ -127,6 +137,9 @@
   --size-logo-lg: 80px;
   --size-cover-height: 240px;
   --size-cover-height-lg: 320px;
+  --size-icon-box: 40px;
+  --size-button-height-sm: 42px;
+  --size-button-height-md: 44px;
 
   /* BORDER WIDTHS */
   --border-width-none: 0;

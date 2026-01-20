@@ -1,0 +1,9 @@
+<button
+  mat-icon-button
+  class="save-offer-button"
+  [class.save-offer-button--saved]="saved()"
+  (click)="toggleSave()"
+  [disabled]="loading()"
+>
+  <mat-icon>{{ saved() ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+</button>

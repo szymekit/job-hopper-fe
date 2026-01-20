@@ -46,6 +46,27 @@
       ],
       "@features/landing/*": [
         "libs/features/landing/*"
+      ],
+      "@features/dashboard/*": [
+        "libs/features/dashboard/*"
+      ],
+      "@features/company-dashboard/*": [
+        "libs/features/company-dashboard/*"
+      ],
+      "@features/applications/*": [
+        "libs/features/applications/*"
+      ],
+      "@features/saved-offers/*": [
+        "libs/features/saved-offers/*"
+      ],
+      "@features/followed-companies/*": [
+        "libs/features/followed-companies/*"
+      ],
+      "@features/feed/*": [
+        "libs/features/feed/*"
+      ],
+      "@shared/api/*": [
+        "libs/shared/api/*"
       ]
     },
     "target": "ES2022",

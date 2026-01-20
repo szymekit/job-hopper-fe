@@ -1,70 +1,127 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { catchError, of, tap } from 'rxjs';
+import { OffersApiService } from '@shared/api/services/offers-api.service';
+import { NotificationsService } from '@core/services/notifications.service';
+import { errorToMessage } from '@shared/util/error-to-message';
 import { JobOfferData } from '@features/job-offer/model/job-offer.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JobOfferFacade {
-  readonly data = signal<JobOfferData>({
-    details: {
-      id: 'job-1',
-      title: 'Ekspert / Ekspertka ds. Data Science',
-      header: {
-        logoUrl: '/assets/lidl-logo.png',
-        companyName: 'Lidl Polska',
-        location: 'Tarnowo Podgórne',
+  private readonly offersApi = inject(OffersApiService);
+  private readonly notifications = inject(NotificationsService);
+  private readonly offerId = signal<string | null>(null);
+
+  readonly loading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+  readonly data = signal<JobOfferData | null>(null);
+
+  loadOffer(id: string): void {
+    this.offerId.set(id);
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.offersApi
+      .getById(id)
+      .pipe(
+        catchError((error) => {
+          const errorMessage = error.status === 404 ? 'Oferta pracy nie została znaleziona.' : errorToMessage(error);
+          this.error.set(errorMessage);
+          this.loading.set(false);
+          if (error.status !== 404) {
+            this.notifications.showError(errorMessage, { title: 'Nie udało się załadować oferty' });
+          }
+          return of(null);
+        })
+      )
+      .subscribe((offer) => {
+        this.loading.set(false);
+        if (offer) {
+          this.data.set(this.mapOfferToData(offer));
+        }
+      });
+  }
+
+  applyToOffer(id: string): void {
+    this.offersApi
+      .apply(id)
+      .pipe(
+        tap(() => {
+          this.notifications.showSuccess('Aplikacja została wysłana. Rozmowa z firmą została rozpoczęta.', {
+            title: 'Aplikacja wysłana',
+          });
+        }),
+        catchError((error) => {
+          const errorMessage = errorToMessage(error);
+          this.notifications.showError(errorMessage, { title: 'Nie udało się wysłać aplikacji' });
+          return of(null);
+        })
+      )
+      .subscribe();
+  }
+
+  private mapOfferToData(offer: any): JobOfferData {
+    const aboutSection = offer.sections?.find((s: any) => s.type === 'ABOUT');
+    const competenciesSection = offer.sections?.find((s: any) => s.type === 'COMPETENCIES');
+    const benefitsSection = offer.sections?.find((s: any) => s.type === 'BENEFITS');
+
+    const salaryText =
+      offer.salaryFrom && offer.salaryTo
+        ? `${offer.salaryFrom} - ${offer.salaryTo} ${offer.currency || 'zł'}/miesiąc`
+        : offer.salaryFrom
+          ? `od ${offer.salaryFrom} ${offer.currency || 'zł'}/miesiąc`
+          : offer.salaryFrom === '0' && offer.salaryTo === '0'
+            ? 'Staż/praktyka'
+            : '';
+
+    const tags = Array.isArray(offer.tags)
+      ? offer.tags.map((tag: any) => (typeof tag === 'string' ? tag : tag?.name || ''))
+      : [];
+
+    const skills = Array.isArray(offer.skills)
+      ? offer.skills.map((skill: any) => (typeof skill === 'string' ? skill : skill?.name || ''))
+      : [];
+
+    return {
+      details: {
+        id: offer.id,
+        title: offer.title,
+        header: {
+          logoUrl: offer.company?.logoUrl || '',
+          companyName: offer.company?.name || '',
+          location: offer.location || '',
+        },
+        salary: salaryText,
+        activeDays: '',
+        description: offer.description || '',
+        tags: tags.filter((t: string) => t),
       },
-      salary: '5000 zł brutto/miesiąc',
-      activeDays: 'Aktywna przez 11 dni',
-      description:
-        'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-      tags: ['Statystyka', 'Analiza', 'Machine learning', 'UoP'],
-    },
-    about: {
-      id: 'about-1',
-      title: 'O ofercie pracy',
-      items: [
-        'Praca end-to-end nad modelami maszynowego uczenia (ML) - od konceptualizacji na podstawie wymagań biznesowych, poprzez przygotowanie danych, prototypowanie modelu do wdrożenia operacyjnego rozwiązania',
-        'Monitorowanie wdrożonych modeli, analiza ich rezultatów oraz wprowadzanie usprawnień',
-        'Wspieranie działów merytorycznych i kadry zarządzającej w podejmowaniu bieżących decyzji poprzez dostarczanie informacji opartych na analizie dużych zbiorów (np. poprzez tworzenie analiz "deep-dive" opartych na modelach statystycznych)',
-        'Staniesz się częścią globalnej społeczności data scientist Lidla i będziesz mógł wymieniać się pomysłami oraz doświadczeniem z ekspertami w dziedzinie Data Science z różnych krajów',
-        'Wdrażanie rozwiązań międzynarodowych poprzez dostosowywanie ich do uwarunkowań lokalnych',
-        'Tworzenie interaktywnych dashboardów dostarczających informacje na bazie zbudowanych algorytmów / modeli, pozwalających użytkownikom na analizy ad hoc',
-      ],
-    },
-    competencies: {
-      id: 'competencies-1',
-      title: 'Wymagane kompetencje',
-      items: [
-        'Praca end-to-end nad modelami maszynowego uczenia (ML) - od konceptualizacji na podstawie wymagań biznesowych, poprzez przygotowanie danych, prototypowanie modelu do wdrożenia operacyjnego rozwiązania',
-        'Monitorowanie wdrożonych modeli, analiza ich rezultatów oraz wprowadzanie usprawnień',
-        'Wspieranie działów merytorycznych i kadry zarządzającej w podejmowaniu bieżących decyzji poprzez dostarczanie informacji opartych na analizie dużych zbiorów (np. poprzez tworzenie analiz "deep-dive" opartych na modelach statystycznych)',
-        'Staniesz się częścią globalnej społeczności data scientist Lidla i będziesz mógł wymieniać się pomysłami oraz doświadczeniem z ekspertami w dziedzinie Data Science z różnych krajów',
-        'Wdrażanie rozwiązań międzynarodowych poprzez dostosowywanie ich do uwarunkowań lokalnych',
-        'Tworzenie interaktywnych dashboardów dostarczających informacje na bazie zbudowanych algorytmów / modeli, pozwalających użytkownikom na analizy ad hoc',
-      ],
-    },
-    benefits: {
-      id: 'benefits-1',
-      title: 'Benefity dla Ciebie',
-      items: [
-        'Praca end-to-end nad modelami maszynowego uczenia (ML) - od konceptualizacji na podstawie wymagań biznesowych, poprzez przygotowanie danych, prototypowanie modelu do wdrożenia operacyjnego rozwiązania',
-        'Monitorowanie wdrożonych modeli, analiza ich rezultatów oraz wprowadzanie usprawnień',
-        'Wspieranie działów merytorycznych i kadry zarządzającej w podejmowaniu bieżących decyzji poprzez dostarczanie informacji opartych na analizie dużych zbiorów (np. poprzez tworzenie analiz "deep-dive" opartych na modelach statystycznych)',
-        'Staniesz się częścią globalnej społeczności data scientist Lidla i będziesz mógł wymieniać się pomysłami oraz doświadczeniem z ekspertami w dziedzinie Data Science z różnych krajów',
-        'Wdrażanie rozwiązań międzynarodowych poprzez dostosowywanie ich do uwarunkowań lokalnych',
-        'Tworzenie interaktywnych dashboardów dostarczających informacje na bazie zbudowanych algorytmów / modeli, pozwalających użytkownikom na analizy ad hoc',
-      ],
-    },
-    skills: {
-      id: 'skills-1',
-      skills: ['data science', 'machine learning', 'analiza', 'statystyka', 'angielski C1', 'praca w zespole'],
-    },
-    location: {
-      id: 'location-1',
-      address: 'Kerkstraat, Amsterdam, Netherlands',
-      latitude: 52.3676,
-      longitude: 4.9041,
-    },
-  });
+      about: {
+        id: aboutSection?.id || 'about-1',
+        title: aboutSection?.title || 'O ofercie pracy',
+        items: aboutSection?.items || [],
+      },
+      competencies: {
+        id: competenciesSection?.id || 'competencies-1',
+        title: competenciesSection?.title || 'Wymagane kompetencje',
+        items: competenciesSection?.items || [],
+      },
+      benefits: {
+        id: benefitsSection?.id || 'benefits-1',
+        title: benefitsSection?.title || 'Benefity dla Ciebie',
+        items: benefitsSection?.items || [],
+      },
+      skills: {
+        id: 'skills-1',
+        skills: skills.filter((s: string) => s),
+      },
+      location: {
+        id: 'location-1',
+        address: offer.address || offer.location || '',
+        latitude: offer.latitude || 0,
+        longitude: offer.longitude || 0,
+      },
+    };
+  }
 }

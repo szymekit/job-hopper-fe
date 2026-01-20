@@ -1,0 +1,73 @@
+<div class="company-dashboard-page">
+  <div class="company-dashboard-page__header">
+    <h1 class="company-dashboard-page__title">Dashboard firmy</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="company-dashboard-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="company-dashboard-page__error">{{ error() }}</div>
+  } @else if (summary()) {
+    <div class="company-dashboard-page__grid">
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.totalOffers }}</div>
+          <div class="company-dashboard-page__card-label">Wszystkie oferty</div>
+        </div>
+      </div>
+
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.activeOffers }}</div>
+          <div class="company-dashboard-page__card-label">Aktywne oferty</div>
+        </div>
+      </div>
+
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.totalApplications }}</div>
+          <div class="company-dashboard-page__card-label">Wszystkie aplikacje</div>
+        </div>
+      </div>
+
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>hourglass_empty</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.pendingApplications }}</div>
+          <div class="company-dashboard-page__card-label">Oczekujące</div>
+        </div>
+      </div>
+
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>check</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.acceptedApplications }}</div>
+          <div class="company-dashboard-page__card-label">Zaakceptowane</div>
+        </div>
+      </div>
+
+      <div class="company-dashboard-page__card">
+        <div class="company-dashboard-page__card-icon">
+          <mat-icon>close</mat-icon>
+        </div>
+        <div class="company-dashboard-page__card-content">
+          <div class="company-dashboard-page__card-value">{{ summary()!.rejectedApplications }}</div>
+          <div class="company-dashboard-page__card-label">Odrzucone</div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,43 @@
+<div class="job-offer-list-page">
+  <div class="job-offer-list-page__header">
+    <h1 class="job-offer-list-page__title">Oferty pracy</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="job-offer-list-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="job-offer-list-page__error">{{ error() }}</div>
+  } @else if (offers().length === 0) {
+    <div class="job-offer-list-page__empty">
+      <mat-icon>work_outline</mat-icon>
+      <p>Nie znaleziono ofert pracy.</p>
+    </div>
+  } @else {
+    <div class="job-offer-list-page__grid">
+      @for (offer of offers(); track offer.id) {
+        <a [routerLink]="['/app/offers', offer.id]" class="job-offer-card">
+          <div class="job-offer-card__header">
+            @if (offer.company?.logoUrl) {
+              <img class="job-offer-card__logo" [src]="offer.company!.logoUrl" [alt]="offer.company!.name || 'Company logo'" />
+            } @else {
+              <div class="job-offer-card__logo-placeholder">{{ offer.company?.name?.[0] || '?' }}</div>
+            }
+          </div>
+          <h3 class="job-offer-card__title">{{ offer.title }}</h3>
+          @if (offer.company?.name) {
+            <p class="job-offer-card__company">{{ offer.company!.name }}</p>
+          }
+          <p class="job-offer-card__meta">{{ offer.location }} @if (formatSalary(offer)) { • {{ formatSalary(offer) }} }</p>
+          <p class="job-offer-card__description">{{ offer.description }}</p>
+          @if (offer.tags && offer.tags.length > 0) {
+            <div class="job-offer-card__tags">
+              @for (tag of offer.tags; track tag) {
+                <span class="job-offer-card__tag">{{ getTagName(tag) }}</span>
+              }
+            </div>
+          }
+        </a>
+      }
+    </div>
+  }
+</div>

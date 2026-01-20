@@ -1,0 +1,135 @@
+export const API_BASE_URL = 'https://job-hopper-be-production.up.railway.app';
+export const WS_BASE_URL = API_BASE_URL.replace('https', 'wss').replace('http', 'ws');
+
+export const API_ENDPOINTS = {
+  auth: {
+    register: '/auth/register',
+    login: '/auth/login',
+    me: '/auth/me',
+  },
+  users: {
+    getById: (id: string) => `/users/${id}`,
+    updateProfile: '/users/me',
+    cvPdf: (id: string) => `/users/${id}/cv.pdf`,
+  },
+  companies: {
+    getAll: '/companies',
+    create: '/companies',
+    getById: (id: string) => `/companies/${id}`,
+    update: (id: string) => `/companies/${id}`,
+  },
+  offers: {
+    getAll: '/offers',
+    create: '/offers',
+    getById: (id: string) => `/offers/${id}`,
+    update: (id: string) => `/offers/${id}`,
+    delete: (id: string) => `/offers/${id}`,
+    apply: (id: string) => `/offers/${id}/apply`,
+    matchScore: (id: string) => `/offers/${id}/match-score`,
+  },
+  applications: {
+    getMyApplications: '/me/applications',
+    getByJobOffer: (id: string) => `/offers/${id}/applications`,
+    updateStatus: (id: string) => `/applications/${id}/status`,
+  },
+  notifications: {
+    getAll: '/notifications',
+    markAsRead: '/notifications/read',
+    getUnreadCount: '/notifications/unread-count',
+  },
+  conversations: {
+    getAll: '/conversations',
+    create: '/conversations',
+    getById: (id: string) => `/conversations/${id}`,
+  },
+  messages: {
+    getAll: (conversationId: string) => `/conversations/${conversationId}/messages`,
+    create: (conversationId: string) => `/conversations/${conversationId}/messages`,
+    markAsRead: (conversationId: string) => `/conversations/${conversationId}/messages/read`,
+  },
+  feed: {
+    getAll: '/feed',
+    getByCompany: (id: string) => `/companies/${id}/posts`,
+    getByUser: (id: string) => `/users/${id}/posts`,
+    getById: (id: string) => `/posts/${id}`,
+    create: '/posts',
+    update: (id: string) => `/posts/${id}`,
+    delete: (id: string) => `/posts/${id}`,
+    like: (id: string) => `/posts/${id}/like`,
+    unlike: (id: string) => `/posts/${id}/like`,
+    getComments: (id: string) => `/posts/${id}/comments`,
+    createComment: (id: string) => `/posts/${id}/comments`,
+    deleteComment: (id: string) => `/comments/${id}`,
+  },
+  favorites: {
+    saveOffer: (id: string) => `/favorites/offers/${id}`,
+    unsaveOffer: (id: string) => `/favorites/offers/${id}`,
+    getSavedOffers: '/favorites/offers',
+    checkSavedStatus: (id: string) => `/favorites/offers/${id}/status`,
+    followCompany: (id: string) => `/favorites/companies/${id}`,
+    unfollowCompany: (id: string) => `/favorites/companies/${id}`,
+    getFollowedCompanies: '/favorites/companies',
+    checkFollowedStatus: (id: string) => `/favorites/companies/${id}/status`,
+  },
+  savedOffers: {
+    save: (id: string) => `/offers/${id}/save`,
+    unsave: (id: string) => `/offers/${id}/save`,
+    getAll: '/me/saved-offers',
+  },
+  follows: {
+    follow: (id: string) => `/companies/${id}/follow`,
+    unfollow: (id: string) => `/companies/${id}/follow`,
+    getAll: '/me/followed-companies',
+  },
+  savedSearches: {
+    getAll: '/me/saved-searches',
+    create: '/me/saved-searches',
+    update: (id: string) => `/me/saved-searches/${id}`,
+    delete: (id: string) => `/me/saved-searches/${id}`,
+  },
+  reviews: {
+    getByCompany: (id: string) => `/reviews/companies/${id}`,
+    createForCompany: (id: string) => `/reviews/companies/${id}`,
+    getByUser: (id: string) => `/reviews/users/${id}`,
+    getById: (id: string) => `/reviews/${id}`,
+    update: (id: string) => `/reviews/${id}`,
+    delete: (id: string) => `/reviews/${id}`,
+  },
+  interviews: {
+    getUpcoming: '/interviews/upcoming',
+    getByApplication: (id: string) => `/interviews/applications/${id}`,
+    create: (id: string) => `/interviews/applications/${id}`,
+    getById: (id: string) => `/interviews/${id}`,
+    update: (id: string) => `/interviews/${id}`,
+    delete: (id: string) => `/interviews/${id}`,
+  },
+  availability: {
+    getAll: '/availability',
+    create: '/availability',
+    getAvailable: '/availability/available',
+    getById: (id: string) => `/availability/${id}`,
+    update: (id: string) => `/availability/${id}`,
+    delete: (id: string) => `/availability/${id}`,
+  },
+  applicationNotes: {
+    getAll: (id: string) => `/applications/${id}/notes`,
+    create: (id: string) => `/applications/${id}/notes`,
+    update: (applicationId: string, id: string) => `/applications/${applicationId}/notes/${id}`,
+    delete: (applicationId: string, id: string) => `/applications/${applicationId}/notes/${id}`,
+  },
+  reports: {
+    create: '/reports',
+  },
+  dashboard: {
+    getSummary: '/company-dashboard/summary',
+  },
+  files: {
+    upload: '/files/upload',
+  },
+  admin: {
+    getReports: '/admin/reports',
+    resolveReport: (id: string) => `/admin/reports/${id}/resolve`,
+    banUser: (id: string) => `/admin/users/${id}/ban`,
+    unbanUser: (id: string) => `/admin/users/${id}/unban`,
+  },
+} as const;

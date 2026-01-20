@@ -1,135 +1,214 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of, tap, switchMap } from 'rxjs';
+import { UsersApiService } from '@shared/api/services/users-api.service';
+import { NotificationsService } from '@core/services/notifications.service';
+import { errorToMessage } from '@shared/util/error-to-message';
 import { UserProfileData } from '@features/user-profile/model/user-profile.model';
+import { UpdateProfileDto } from '@shared/api/models/auth.model';
+import { AuthApiService } from '@shared/api/services/auth-api.service';
+import { FilesApiService } from '@shared/api/services/files-api.service';
+import { AuthService } from '@core/services/auth.service';
+import { AvailabilityFacade } from './availability.facade';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserProfileFacade {
-  readonly data = signal<UserProfileData>({
-    header: {
-      id: 'user-1',
-      fullName: 'Tymoteusz Stelmach',
-      headline: 'Barista & Coffee Trainer',
-      description: 'Trener kawy, szczelny i Szkolenia, degustacja, kultura bycia.',
-      avatarUrl:
-        'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=200&q=80',
-      coverUrl:
-        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80',
-      top10Badge: false,
-      activeTab: 'service',
-    },
-    availableOrders: [
-      { id: 'order-1', placeholder: true },
-      { id: 'order-2', placeholder: true },
-      { id: 'order-3', placeholder: true },
-      { id: 'order-4', placeholder: true },
-    ],
-    basicInfo: {
-      citizenship: 'Polskie',
-      student: 'Tak',
-      noCriminalRecord: 'Tak',
-      drivingLicense: 'B1',
-    },
-    experience: {
-      description:
-        'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-    },
-    qualifications: [
-      {
-        id: 'qual-1',
-        title: 'Uprawnienia na wózek widłowy',
-        checked: true,
-      },
-    ],
-    roles: [
-      {
-        id: 'role-1',
-        title: 'Barista',
-        level: 'Mistrz',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-        hasInfoIcon: true,
-        hasSetDefaultButton: true,
-        tags: ['Regulacja młynka', 'Latte Art', 'Metody parzenia', 'Zarządzanie zespołem'],
-      },
-      {
-        id: 'role-2',
-        title: 'Fotograf',
-        level: 'Amator',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-        hasInfoIcon: true,
-        tags: ['Fotografia eventowa', 'Zdjęcia biznesowe', 'Sesje zdjęciowe', 'Fotografia produktowa'],
-      },
-    ],
-    completedOrders: [
-      {
-        id: 'order-1',
-        companyName: 'Lidl Polska',
-        logoUrl: '/assets/lidl-logo.png',
-        jobType: 'Współpraca B2B',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-        hasInfoIcon: true,
-      },
-      {
-        id: 'order-2',
-        companyName: 'A&B',
-        logoUrl: '/assets/aldi-logo.png',
-        jobType: 'Magazyn',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-        hasInfoIcon: true,
-      },
-    ],
-    certificates: [
-      {
-        id: 'cert-1',
-        title: 'Kurs baristy wstępnego',
-        trainingType: 'Szkolenie B2B',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-      },
-      {
-        id: 'cert-2',
-        title: 'Kurs baristy latte',
-        trainingType: 'Szkolenie B2B',
-        description:
-          'Rhoncus dolor purus non enim praesent elementum. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Metus vulputate eu scelerisque felis imperdiet proin fermentum leo vel.',
-      },
-    ],
-    portfolio: [
-      {
-        id: 'portfolio-1',
-        title: 'Przygotowanie latte art',
-        imageUrl:
-          'https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=500&q=80',
-      },
-      {
-        id: 'portfolio-2',
-        title: 'Praca za barem',
-        imageUrl:
-          'https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=500&q=80',
-      },
-      {
-        id: 'portfolio-3',
-        title: 'Kawa z alternatywnych metod',
-        imageUrl:
-          'https://images.unsplash.com/photo-1459755486867-b55449bb39ff?auto=format&fit=crop&w=500&q=80',
-      },
-      {
-        id: 'portfolio-4',
-        title: 'Detal ziaren kawy',
-        imageUrl:
-          'https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=500&q=80',
-      },
-      {
-        id: 'portfolio-5',
-        title: 'Spotkanie w kawiarni',
-        imageUrl:
-          'https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=500&q=80',
-      },
-    ],
-  });
-}
+  private readonly usersApi = inject(UsersApiService);
+  private readonly authApi = inject(AuthApiService);
+  private readonly filesApi = inject(FilesApiService);
+  private readonly authService = inject(AuthService);
+  private readonly notifications = inject(NotificationsService);
+  private readonly availabilityFacade = inject(AvailabilityFacade);
+  private readonly userId = signal<string | null>(null);
 
+  readonly loading = signal<boolean>(false);
+  readonly uploading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+  readonly data = signal<UserProfileData | null>(null);
+
+  readonly isOwnProfile = signal<boolean>(false);
+  readonly availabilitySlots = this.availabilityFacade.slots;
+  readonly availabilityLoading = this.availabilityFacade.loading;
+
+  loadProfile(id: string): void {
+    this.userId.set(id);
+    this.loading.set(true);
+    this.error.set(null);
+
+    const currentUser = this.authService.currentUser();
+    this.isOwnProfile.set(currentUser?.id === id);
+
+    this.usersApi
+      .getById(id)
+      .pipe(
+        catchError((error) => {
+          const errorMessage =
+            error.status === 404 ? 'Profil użytkownika nie został znaleziony.' : errorToMessage(error);
+          this.error.set(errorMessage);
+          this.loading.set(false);
+          if (error.status !== 404) {
+            this.notifications.showError(errorMessage, { title: 'Nie udało się załadować profilu' });
+          }
+          return of(null);
+        })
+      )
+      .subscribe((user) => {
+        this.loading.set(false);
+        if (user) {
+          this.data.set(this.mapUserToProfileData(user));
+          
+          if (this.isOwnProfile()) {
+            this.availabilityFacade.loadSlots();
+          }
+        }
+      });
+  }
+
+  private mapUserToProfileData(user: any): UserProfileData {
+    return {
+      header: {
+        id: user.id,
+        fullName: user.fullName || '',
+        headline: user.headline || '',
+        description: user.description || '',
+        avatarUrl: user.avatarUrl || '',
+        coverUrl: user.coverUrl || '',
+        top10Badge: false,
+        activeTab: 'service',
+      },
+      availableOrders: [],
+      basicInfo: {
+        citizenship: user.citizenship || '',
+        student: user.isStudent ? 'Tak' : 'Nie',
+        noCriminalRecord: user.hasNoCriminalRecord ? 'Tak' : 'Nie',
+        drivingLicense: user.drivingLicense || '',
+      },
+      experience: {
+        description: user.experience || '',
+      },
+      qualifications: [],
+      roles: [],
+      completedOrders: [],
+      certificates: [],
+      portfolio: [],
+    };
+  }
+
+  updateProfile(data: UpdateProfileDto): void {
+    this.loading.set(true);
+    this.authApi
+      .updateProfile(data)
+      .pipe(
+        tap((user) => {
+          this.authService.refreshUser(user);
+          this.data.update((currentData) => {
+            if (!currentData) {
+              return null;
+            }
+            return {
+              ...currentData,
+              header: {
+                ...currentData.header,
+                fullName: user.fullName || currentData.header.fullName,
+                headline: user.headline || currentData.header.headline,
+                description: user.description || currentData.header.description,
+                avatarUrl: user.avatarUrl || currentData.header.avatarUrl,
+                coverUrl: user.coverUrl || currentData.header.coverUrl,
+              },
+              basicInfo: {
+                ...currentData.basicInfo,
+                citizenship: user.citizenship || currentData.basicInfo.citizenship,
+                student: user.isStudent ? 'Tak' : 'Nie',
+                noCriminalRecord: user.hasNoCriminalRecord ? 'Tak' : 'Nie',
+                drivingLicense: user.drivingLicense || currentData.basicInfo.drivingLicense,
+              },
+              experience: {
+                description: user.experience || currentData.experience.description,
+              },
+            };
+          });
+          this.notifications.showSuccess('Profil został zaktualizowany.');
+        }),
+        catchError((error) => {
+          const errorMessage = errorToMessage(error);
+          this.notifications.showError(errorMessage, { title: 'Nie udało się zaktualizować profilu' });
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this.loading.set(false);
+      });
+  }
+
+  uploadCoverPhoto(file: File): void {
+    this.uploading.set(true);
+    this.filesApi
+      .uploadFile(file)
+      .pipe(
+        switchMap((response) => {
+          return this.authApi.updateProfile({ coverUrl: response.url });
+        }),
+        tap((user) => {
+          this.authService.refreshUser(user);
+          this.data.update((currentData) => {
+            if (!currentData) {
+              return null;
+            }
+            return {
+              ...currentData,
+              header: {
+                ...currentData.header,
+                coverUrl: user.coverUrl || currentData.header.coverUrl,
+              },
+            };
+          });
+          this.notifications.showSuccess('Zdjęcie okładki zostało zaktualizowane.');
+        }),
+        catchError((error) => {
+          const errorMessage = errorToMessage(error);
+          this.notifications.showError(errorMessage, { title: 'Nie udało się przesłać zdjęcia okładki' });
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this.uploading.set(false);
+      });
+  }
+
+  uploadAvatar(file: File): void {
+    this.uploading.set(true);
+    this.filesApi
+      .uploadFile(file)
+      .pipe(
+        switchMap((response) => {
+          return this.authApi.updateProfile({ avatarUrl: response.url });
+        }),
+        tap((user) => {
+          this.authService.refreshUser(user);
+          this.data.update((currentData) => {
+            if (!currentData) {
+              return null;
+            }
+            return {
+              ...currentData,
+              header: {
+                ...currentData.header,
+                avatarUrl: user.avatarUrl || currentData.header.avatarUrl,
+              },
+            };
+          });
+          this.notifications.showSuccess('Zdjęcie profilowe zostało zaktualizowane.');
+        }),
+        catchError((error) => {
+          const errorMessage = errorToMessage(error);
+          this.notifications.showError(errorMessage, { title: 'Nie udało się przesłać zdjęcia profilowego' });
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this.uploading.set(false);
+      });
+  }
+}

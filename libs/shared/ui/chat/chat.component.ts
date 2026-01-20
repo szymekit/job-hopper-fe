@@ -32,14 +32,24 @@ export class ChatComponent implements AfterViewChecked {
   readonly data = this.chatService.data;
   readonly activeConversation = this.chatService.activeConversation;
   readonly currentUser = this.chatService.currentUser;
+  readonly totalUnreadCount = this.chatService.totalUnreadCount;
   readonly messageForm = new FormControl('', [Validators.required]);
 
   private shouldScroll = false;
+  private typingTimeout?: ReturnType<typeof setTimeout>;
 
   readonly conversations = computed(() => this.data().conversations);
   readonly activeMessages = computed(() => {
     const active = this.activeConversation();
     return active?.messages || [];
+  });
+
+  readonly typingUsers = computed(() => {
+    const activeId = this.data().activeConversationId;
+    if (!activeId) {
+      return [];
+    }
+    return this.chatService.getTypingUsers(activeId);
   });
 
   constructor() {
@@ -78,6 +88,7 @@ export class ChatComponent implements AfterViewChecked {
 
   selectConversation(conversationId: string): void {
     this.chatService.selectConversation(conversationId);
+    this.shouldScroll = true;
   }
 
   sendMessage(): void {
@@ -87,16 +98,37 @@ export class ChatComponent implements AfterViewChecked {
     }
 
     this.chatService.sendMessage(content);
+    this.chatService.sendTypingIndicator(false);
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
     this.messageForm.setValue('');
     this.shouldScroll = true;
+  }
+
+  onInputChange(): void {
+    const activeId = this.data().activeConversationId;
+    if (!activeId) {
+      return;
+    }
+
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
+
+    this.chatService.sendTypingIndicator(true);
+
+    this.typingTimeout = setTimeout(() => {
+      this.chatService.sendTypingIndicator(false);
+    }, 3000);
   }
 
   private scrollToBottom(): void {
     const container = this.messagesContainer()?.nativeElement;
     if (container) {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         container.scrollTop = container.scrollHeight;
-      }, 0);
+      });
     }
   }
 }

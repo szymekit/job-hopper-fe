@@ -1,41 +1,96 @@
 <div class="profile-page">
-  <div class="profile-page__container">
-    <div class="profile-page__card">
+  @if (loading()) {
+    <div>Ładowanie...</div>
+  } @else if (error()) {
+    <div>Błąd: {{ error() }}</div>
+  } @else if (data()) {
+    <div class="profile-page__container">
+      <div class="profile-page__card">
       <div class="profile-page__cover">
-        <img class="profile-page__cover-image" [src]="data().header.coverUrl" alt="" />
+        <img class="profile-page__cover-image" [src]="data()!.header.coverUrl || '/assets/auth-bg.jpg'" alt="" />
         <div class="profile-page__cover-overlay"></div>
+        @if (isOwnProfile()) {
+          <button class="profile-page__cover-edit-btn" (click)="triggerCoverUpload()" [disabled]="uploading()">
+            <mat-icon>camera_alt</mat-icon>
+            <span>Zmień zdjęcie okładki</span>
+          </button>
+        }
+        <input
+          #coverInput
+          type="file"
+          accept="image/*"
+          (change)="onCoverPhotoSelected($event)"
+          style="display: none"
+        />
       </div>
 
       <div class="profile-page__header">
         <div class="profile-page__header-left">
           <div class="profile-page__avatar-wrapper">
-            <img class="profile-page__avatar" [src]="data().header.avatarUrl" alt="{{ data().header.fullName }}" />
+            <img class="profile-page__avatar" [src]="data()!.header.avatarUrl || '/assets/logo.svg'" alt="{{ data()!.header.fullName }}" />
+            @if (isOwnProfile()) {
+              <button class="profile-page__avatar-edit-btn" (click)="triggerAvatarUpload()" [disabled]="uploading()">
+                <mat-icon>camera_alt</mat-icon>
+              </button>
+            }
           </div>
+          <input
+            #avatarInput
+            type="file"
+            accept="image/*"
+            (change)="onAvatarSelected($event)"
+            style="display: none"
+          />
         </div>
         <div class="profile-page__header-content">
           <div class="profile-page__headline">
-            <h1 class="profile-page__name">{{ data().header.fullName }}</h1>
-            <p class="profile-page__role">{{ data().header.headline }}</p>
-            <p class="profile-page__description">
-              {{ data().header.description }}
-            </p>
+            @if (isEditing()) {
+              <form [formGroup]="profileForm" class="profile-page__edit-form">
+                <input formControlName="fullName" class="profile-page__edit-input" placeholder="Imię i nazwisko" />
+                <input formControlName="headline" class="profile-page__edit-input" placeholder="Nagłówek" />
+                <textarea formControlName="description" class="profile-page__edit-textarea" placeholder="Opis"></textarea>
+              </form>
+            } @else {
+              <h1 class="profile-page__name">{{ data()!.header.fullName }}</h1>
+              <p class="profile-page__role">{{ data()!.header.headline }}</p>
+              <p class="profile-page__description">
+                {{ data()!.header.description }}
+              </p>
+            }
+            @if (isOwnProfile() && !isEditing()) {
+              <button class="profile-page__edit-btn" (click)="startEditing()">
+                <mat-icon>edit</mat-icon>
+                <span>Edytuj profil</span>
+              </button>
+            }
+            @if (isEditing()) {
+              <div class="profile-page__edit-actions">
+                <button class="profile-page__save-btn" (click)="saveProfile()" [disabled]="loading() || !profileForm.valid">
+                  <mat-icon>save</mat-icon>
+                  <span>Zapisz</span>
+                </button>
+                <button class="profile-page__cancel-btn" (click)="cancelEditing()" [disabled]="loading()">
+                  <span>Anuluj</span>
+                </button>
+              </div>
+            }
           </div>
           <div class="profile-page__tabs">
             <button
               class="profile-page__tab"
-              [class.profile-page__tab--active]="data().header.activeTab === 'service'"
+              [class.profile-page__tab--active]="data()!.header.activeTab === 'service'"
             >
               Serwis
             </button>
             <button
               class="profile-page__tab"
-              [class.profile-page__tab--active]="data().header.activeTab === 'photographer'"
+              [class.profile-page__tab--active]="data()!.header.activeTab === 'photographer'"
             >
               Fotograf
             </button>
             <button
               class="profile-page__tab"
-              [class.profile-page__tab--active]="data().header.activeTab === 'reviews'"
+              [class.profile-page__tab--active]="data()!.header.activeTab === 'reviews'"
             >
               Opinie
             </button>
@@ -47,38 +102,161 @@
         <section class="profile-section">
           <header class="profile-section__header">
             <h2 class="profile-section__title">Dostępne zlecenia</h2>
-          </header>
-          <div class="profile-section__body profile-section__body--orders">
-            @for (order of data().availableOrders; track order.id) {
-              <div class="profile-order-placeholder">
-                <div class="profile-order-placeholder__pattern"></div>
-              </div>
+            @if (isOwnProfile() && !isAddingAvailability()) {
+              <button class="profile-section__add-btn" (click)="startAddingAvailability()">
+                <mat-icon>add</mat-icon>
+                <span>Dodaj slot</span>
+              </button>
             }
-          </div>
+          </header>
+          @if (isAddingAvailability()) {
+            <form [formGroup]="availabilityForm" class="profile-section__body profile-section__body--edit">
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Data i godzina rozpoczęcia</label>
+                <input
+                  formControlName="startTime"
+                  type="datetime-local"
+                  class="profile-section__edit-input"
+                  required
+                />
+              </div>
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Data i godzina zakończenia</label>
+                <input
+                  formControlName="endTime"
+                  type="datetime-local"
+                  class="profile-section__edit-input"
+                  required
+                />
+              </div>
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Dostępny</label>
+                <div class="profile-section__checkbox-wrapper">
+                  <mat-checkbox formControlName="isAvailable">Tak</mat-checkbox>
+                </div>
+              </div>
+              <div class="profile-section__edit-actions">
+                <button
+                  type="button"
+                  class="profile-page__save-btn"
+                  (click)="saveAvailability()"
+                  [disabled]="availabilityLoading() || !availabilityForm.valid"
+                >
+                  <mat-icon>save</mat-icon>
+                  <span>Zapisz</span>
+                </button>
+                <button
+                  type="button"
+                  class="profile-page__cancel-btn"
+                  (click)="cancelAddingAvailability()"
+                  [disabled]="availabilityLoading()"
+                >
+                  <span>Anuluj</span>
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="profile-section__body profile-section__body--availability">
+              @if (availabilityLoading()) {
+                <div class="profile-section__loading">Ładowanie...</div>
+              } @else if (availabilitySlots().length === 0) {
+                <div class="profile-section__empty">
+                  <p>Brak zdefiniowanych slotów dostępności.</p>
+                  @if (isOwnProfile()) {
+                    <button class="profile-section__empty-btn" (click)="startAddingAvailability()">
+                      Dodaj pierwszy slot
+                    </button>
+                  }
+                </div>
+              } @else {
+                <div class="profile-availability-list">
+                  @for (slot of availabilitySlots(); track slot.id) {
+                    <div class="profile-availability-item">
+                      <div class="profile-availability-item__content">
+                        <div class="profile-availability-item__time">
+                          <mat-icon class="profile-availability-item__icon">schedule</mat-icon>
+                          <div>
+                            <div class="profile-availability-item__time-start">
+                              {{ formatAvailabilityTime(slot.startTime) }}
+                            </div>
+                            <div class="profile-availability-item__time-end">
+                              do {{ formatAvailabilityTime(slot.endTime) }}
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="profile-availability-item__status"
+                          [class.profile-availability-item__status--available]="slot.isAvailable"
+                          [class.profile-availability-item__status--unavailable]="!slot.isAvailable"
+                        >
+                          {{ slot.isAvailable ? 'Dostępny' : 'Niedostępny' }}
+                        </div>
+                      </div>
+                      @if (isOwnProfile()) {
+                        <button
+                          class="profile-availability-item__delete"
+                          (click)="deleteAvailabilitySlot(slot.id)"
+                          [disabled]="availabilityLoading()"
+                          aria-label="Usuń slot"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
         </section>
 
         <section class="profile-section">
           <header class="profile-section__header">
             <h2 class="profile-section__title">Informacje podstawowe</h2>
           </header>
-          <div class="profile-section__body profile-section__body--columns">
-            <div class="profile-section__column">
-              <div class="profile-section__column-label">Obywatelstwo</div>
-              <div class="profile-section__column-value">{{ data().basicInfo.citizenship }}</div>
+          @if (isEditing()) {
+            <form [formGroup]="profileForm" class="profile-section__body profile-section__body--edit">
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Obywatelstwo</label>
+                <input formControlName="citizenship" class="profile-section__edit-input" placeholder="np. Poland" />
+              </div>
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Student</label>
+                <div class="profile-section__checkbox-wrapper">
+                  <mat-checkbox formControlName="isStudent">Tak</mat-checkbox>
+                </div>
+              </div>
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Niekarany</label>
+                <div class="profile-section__checkbox-wrapper">
+                  <mat-checkbox formControlName="hasNoCriminalRecord">Tak</mat-checkbox>
+                </div>
+              </div>
+              <div class="profile-section__edit-field">
+                <label class="profile-section__edit-label">Prawo jazdy</label>
+                <input formControlName="drivingLicense" class="profile-section__edit-input" placeholder="np. B, C" />
+              </div>
+            </form>
+          } @else {
+            <div class="profile-section__body profile-section__body--columns">
+              <div class="profile-section__column">
+                <div class="profile-section__column-label">Obywatelstwo</div>
+                <div class="profile-section__column-value">{{ data()!.basicInfo.citizenship || '—' }}</div>
+              </div>
+              <div class="profile-section__column">
+                <div class="profile-section__column-label">Student</div>
+                <div class="profile-section__column-value">{{ data()!.basicInfo.student }}</div>
+              </div>
+              <div class="profile-section__column">
+                <div class="profile-section__column-label">Niekarany</div>
+                <div class="profile-section__column-value">{{ data()!.basicInfo.noCriminalRecord }}</div>
+              </div>
+              <div class="profile-section__column">
+                <div class="profile-section__column-label">Prawo jazdy</div>
+                <div class="profile-section__column-value">{{ data()!.basicInfo.drivingLicense || '—' }}</div>
+              </div>
             </div>
-            <div class="profile-section__column">
-              <div class="profile-section__column-label">Student</div>
-              <div class="profile-section__column-value">{{ data().basicInfo.student }}</div>
-            </div>
-            <div class="profile-section__column">
-              <div class="profile-section__column-label">Niekarany</div>
-              <div class="profile-section__column-value">{{ data().basicInfo.noCriminalRecord }}</div>
-            </div>
-            <div class="profile-section__column">
-              <div class="profile-section__column-label">Prawo jazdy</div>
-              <div class="profile-section__column-value">{{ data().basicInfo.drivingLicense }}</div>
-            </div>
-          </div>
+          }
         </section>
 
         <section class="profile-section">
@@ -86,7 +264,7 @@
             <h2 class="profile-section__title">Role zawodowe i kompetencje</h2>
           </header>
           <div class="profile-section__body">
-            @for (role of data().roles; track role.id) {
+            @for (role of data()!.roles; track role.id) {
               <div class="profile-role">
                 <div class="profile-role__header">
                   <div class="profile-role__header-left">
@@ -118,9 +296,20 @@
           <header class="profile-section__header">
             <h2 class="profile-section__title">Moje doświadczenie zawodowe</h2>
           </header>
-          <div class="profile-section__body">
-            <p class="profile-section__text">{{ data().experience.description }}</p>
-          </div>
+          @if (isEditing()) {
+            <form [formGroup]="profileForm" class="profile-section__body">
+              <textarea
+                formControlName="experience"
+                class="profile-section__edit-textarea"
+                placeholder="Opisz swoje doświadczenie zawodowe..."
+                rows="6"
+              ></textarea>
+            </form>
+          } @else {
+            <div class="profile-section__body">
+              <p class="profile-section__text">{{ data()!.experience.description || 'Brak opisu doświadczenia' }}</p>
+            </div>
+          }
         </section>
 
         <section class="profile-section">
@@ -128,7 +317,7 @@
             <h2 class="profile-section__title">Dodatkowe kwalifikacje</h2>
           </header>
           <div class="profile-section__body">
-            @for (qual of data().qualifications; track qual.id) {
+            @for (qual of data()!.qualifications; track qual.id) {
               <div class="profile-qualification">
                 <mat-checkbox [checked]="qual.checked" [disabled]="true"></mat-checkbox>
                 <span class="profile-qualification__text">{{ qual.title }}</span>
@@ -142,7 +331,7 @@
             <h2 class="profile-section__title">Zrealizowane zlecenia</h2>
           </header>
           <div class="profile-section__body">
-            @for (order of data().completedOrders; track order.id) {
+            @for (order of data()!.completedOrders; track order.id) {
               <div class="profile-order">
                 <div class="profile-order__header">
                   <div class="profile-order__header-left">
@@ -168,7 +357,7 @@
             <h2 class="profile-section__title">Uprawnienia i certyfikaty</h2>
           </header>
           <div class="profile-section__body">
-            @for (cert of data().certificates; track cert.id) {
+            @for (cert of data()!.certificates; track cert.id) {
               <div class="profile-certificate">
                 <div class="profile-certificate__title">{{ cert.title }}</div>
                 <div class="profile-certificate__training-type">{{ cert.trainingType }}</div>
@@ -187,7 +376,7 @@
             <h2 class="profile-section__title">Portfolio</h2>
           </header>
           <div class="profile-section__body profile-section__body--grid">
-            @for (item of data().portfolio; track item.id) {
+            @for (item of data()!.portfolio; track item.id) {
               <div class="profile-portfolio__item">
                 <img [src]="item.imageUrl" [alt]="item.title" />
               </div>
@@ -195,6 +384,7 @@
           </div>
         </section>
       </div>
+      </div>
     </div>
-  </div>
+  }
 </div>

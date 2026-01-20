@@ -1,8 +1,13 @@
 <div class="company-profile-page">
+  @if (loading()) {
+    <div>Ładowanie...</div>
+  } @else if (error()) {
+    <div>Błąd: {{ error() }}</div>
+  } @else if (data()) {
   <div class="company-profile-page__container">
     <div class="company-profile-page__card">
       <div class="company-profile-page__cover">
-        <img class="company-profile-page__cover-image" [src]="data().header.coverUrl" alt="" />
+        <img class="company-profile-page__cover-image" [src]="data()!.header.coverUrl" alt="" />
         <div class="company-profile-page__cover-overlay"></div>
         <div class="company-profile-page__header-top">
           <a href="#" class="company-profile-page__nav-link">Na stronę www</a>
@@ -13,21 +18,21 @@
         </div>
         <div class="company-profile-page__header-content">
           <div class="company-profile-page__logo-wrapper">
-            <img class="company-profile-page__logo" [src]="data().header.logoUrl" alt="{{ data().header.companyName }}" />
+            <img class="company-profile-page__logo" [src]="data()!.header.logoUrl" alt="{{ data()!.header.companyName }}" />
           </div>
           <div class="company-profile-page__company-info">
-            <h1 class="company-profile-page__company-name">{{ data().header.companyName }}</h1>
+            <h1 class="company-profile-page__company-name">{{ data()!.header.companyName }}</h1>
             <p class="company-profile-page__tagline">
-              {{ data().header.tagline }}
+              {{ data()!.header.tagline }}
               <span class="company-profile-page__heart">💙</span>
             </p>
             <div class="company-profile-page__details">
-              <span>{{ data().header.companyType }}</span>
-              <span>{{ data().header.location }}</span>
-              <span>{{ data().header.country }}</span>
-              <span>{{ data().header.employeeCount }}</span>
+              <span>{{ data()!.header.companyType }}</span>
+              <span>{{ data()!.header.location }}</span>
+              <span>{{ data()!.header.country }}</span>
+              <span>{{ data()!.header.employeeCount }}</span>
             </div>
-            @if (data().header.activeRecruitment) {
+            @if (data()!.header.activeRecruitment) {
               <a href="#" class="company-profile-page__recruitment-link">AKTYWNA REKRUTACJA</a>
             }
           </div>
@@ -35,7 +40,7 @@
       </div>
 
       <div class="company-profile-page__summary">
-        @for (card of data().summaryCards; track card.id) {
+        @for (card of data()!.summaryCards; track card.id) {
           <div class="company-profile-page__summary-card">
             <div class="company-profile-page__summary-label">{{ card.label }}</div>
             <div class="company-profile-page__summary-value">{{ card.value }}</div>
@@ -44,7 +49,7 @@
       </div>
 
       <div class="company-profile-page__navigation">
-        @for (tab of data().navigationTabs; track tab.id) {
+        @for (tab of data()!.navigationTabs; track tab.id) {
           <button
             class="company-profile-page__nav-tab"
             [class.company-profile-page__nav-tab--active]="tab.active"
@@ -60,7 +65,7 @@
             <h2 class="company-section__title">O nas</h2>
           </header>
           <div class="company-section__body">
-            @for (section of data().aboutSections; track section.id) {
+            @for (section of data()!.aboutSections; track section.id) {
               <div class="company-about">
                 <h3 class="company-about__subtitle">{{ section.title }}</h3>
                 <p class="company-about__text">{{ section.content }}</p>
@@ -74,7 +79,7 @@
             <h2 class="company-section__title">Benefity pracownicze</h2>
           </header>
           <div class="company-section__body">
-            @for (benefit of data().benefits; track benefit.id) {
+            @for (benefit of data()!.benefits; track benefit.id) {
               <div class="company-benefit">
                 <h3 class="company-benefit__title">{{ benefit.title }}</h3>
                 <p class="company-benefit__description">{{ benefit.description }}</p>
@@ -93,7 +98,7 @@
             <h2 class="company-section__title">Portfolio firmy</h2>
           </header>
           <div class="company-section__body company-section__body--portfolio">
-            @for (item of data().portfolio; track item.id) {
+            @for (item of data()!.portfolio; track item.id) {
               <div class="company-portfolio__item">
                 <img [src]="item.imageUrl" [alt]="item.title" />
               </div>
@@ -106,7 +111,7 @@
             <h2 class="company-section__title">Aktywna rekrutacja</h2>
           </header>
           <div class="company-section__body">
-            @for (job of data().jobOffers; track job.id) {
+            @for (job of data()!.jobOffers; track job.id) {
               <div class="company-job">
                 <div class="company-job__header">
                   <div class="company-job__icon-wrapper">
@@ -140,11 +145,11 @@
 
         <section class="company-section">
           <header class="company-section__header">
-            <h2 class="company-section__title">Opinie o współpracy z {{ data().header.companyName }}</h2>
+            <h2 class="company-section__title">Opinie o współpracy z {{ data()!.header.companyName }}</h2>
           </header>
           <div class="company-section__body">
-            <button class="company-reviews__button">{{ data().totalReviews }} opinii</button>
-            @for (review of data().reviews; track review.id) {
+            <button class="company-reviews__button">{{ data()!.totalReviews }} opinii</button>
+            @for (review of data()!.reviews; track review.id) {
               <div class="company-review">
                 <div class="company-review__header">
                   @if (review.iconUrl) {
@@ -162,4 +167,4 @@
       </div>
     </div>
   </div>
-</div>
+}

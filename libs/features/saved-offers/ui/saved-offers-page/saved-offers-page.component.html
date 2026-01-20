@@ -1,0 +1,37 @@
+<div class="saved-offers-page">
+  <div class="saved-offers-page__header">
+    <h1 class="saved-offers-page__title">Zapisane oferty</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="saved-offers-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="saved-offers-page__error">{{ error() }}</div>
+  } @else if (offers().length === 0) {
+    <div class="saved-offers-page__empty">
+      <mat-icon>bookmark_border</mat-icon>
+      <p>Nie masz zapisanych ofert.</p>
+    </div>
+  } @else {
+    <div class="saved-offers-page__grid">
+          @for (savedOffer of offers(); track savedOffer.id) {
+            <a [routerLink]="['/job', savedOffer.offerId]" class="saved-offers-page__card">
+              <div class="saved-offers-page__card-header">
+                @if (savedOffer.offer?.company?.logoUrl) {
+                  <img
+                    [src]="savedOffer.offer!.company!.logoUrl!"
+                    [alt]="savedOffer.offer!.company!.name || ''"
+                    class="saved-offers-page__card-logo"
+                  />
+                }
+            <div class="saved-offers-page__card-info">
+              <h3 class="saved-offers-page__card-title">{{ savedOffer.offer?.title }}</h3>
+              <p class="saved-offers-page__card-company">{{ savedOffer.offer?.company?.name }}</p>
+              <p class="saved-offers-page__card-location">{{ savedOffer.offer?.location }}</p>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

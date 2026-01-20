@@ -1,6 +1,7 @@
 
 @use '@angular/material' as mat;
 @use '../libs/shared/ui/styles/design-tokens' as tokens;
+@use '../libs/shared/ui/styles/mixins' as mixins;
 
 html {
   @include mat.theme((

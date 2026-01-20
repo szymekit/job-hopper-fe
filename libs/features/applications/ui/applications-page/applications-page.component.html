@@ -1,0 +1,45 @@
+<div class="applications-page">
+  <div class="applications-page__header">
+    <h1 class="applications-page__title">Moje aplikacje</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="applications-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="applications-page__error">{{ error() }}</div>
+  } @else if (applications().length === 0) {
+    <div class="applications-page__empty">
+      <mat-icon>description</mat-icon>
+      <p>Nie masz jeszcze żadnych aplikacji.</p>
+    </div>
+  } @else {
+    <div class="applications-page__list">
+      @for (application of applications(); track application.id) {
+        <div class="applications-page__card">
+          <div class="applications-page__card-header">
+            <h3 class="applications-page__card-title">
+              <a [routerLink]="['/app/offers', application.jobOfferId]">{{ application.jobOffer?.title }}</a>
+            </h3>
+            <span class="applications-page__card-status" [class]="'applications-page__card-status--' + application.status.toLowerCase()">
+              {{ getStatusLabel(application.status) }}
+            </span>
+          </div>
+          <p class="applications-page__card-company">{{ application.jobOffer?.company?.name }}</p>
+          @if (application.matchScore) {
+            <div class="applications-page__card-match-score">
+              Match score: {{ application.matchScore }}%
+            </div>
+          }
+          <div class="applications-page__card-footer">
+            <span class="applications-page__card-date">
+              Złożono: {{ formatDate(application.createdAt) }}
+            </span>
+            <a [routerLink]="['/app/offers', application.jobOfferId]" class="applications-page__card-link">
+              Zobacz ofertę
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

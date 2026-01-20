@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,10 +29,12 @@ interface ContactFormValue {
   styleUrls: ['./landing-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingPageComponent {
+export class LandingPageComponent implements OnInit {
   private readonly facade = inject(LandingFacade);
 
   readonly data = computed(() => this.facade.data());
+  readonly loading = this.facade.loading;
+  readonly error = this.facade.error;
   readonly activeTab = computed(() => 'offers');
   readonly activeFilter = computed(() => 'selected');
 
@@ -62,5 +64,9 @@ export class LandingPageComponent {
 
   getCategoryColorClass(color: string): string {
     return `landing-category--${color}`;
+  }
+
+  ngOnInit(): void {
+    this.facade.loadJobOffers();
   }
 }

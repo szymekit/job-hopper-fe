@@ -1,0 +1,11 @@
+.save-offer-button {
+  color: var(--color-text-secondary);
+}
+
+.save-offer-button--saved {
+  color: var(--color-btn-secondary);
+}
+
+.save-offer-button:disabled {
+  opacity: var(--opacity-disabled);
+}

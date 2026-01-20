@@ -71,6 +71,12 @@
           }
         </div>
 
+        @if (typingUsers().length > 0) {
+          <div class="chat__typing-indicator">
+            <span>{{ typingUsers().length === 1 ? 'Pisze...' : 'Piszą...' }}</span>
+          </div>
+        }
+
         <div class="chat__input-wrapper">
           <input
             #messageInput
@@ -79,6 +85,7 @@
             [formControl]="messageForm"
             placeholder="Napisz wiadomość..."
             (keydown.enter)="sendMessage()"
+            (input)="onInputChange()"
           />
           <button class="chat__send-btn" (click)="sendMessage()" [disabled]="!messageForm.valid">
             <mat-icon>send</mat-icon>
@@ -90,5 +97,8 @@
 } @else {
   <button class="chat__bubble" (click)="toggle()">
     <mat-icon>chat</mat-icon>
+    @if (totalUnreadCount() > 0) {
+      <span class="chat__bubble-badge">{{ totalUnreadCount() }}</span>
+    }
   </button>
 }

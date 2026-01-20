@@ -1,0 +1,136 @@
+@use '../../../../shared/ui/styles/mixins' as mixins;
+
+.applications-page {
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-4xl);
+}
+
+.applications-page__header {
+  margin-bottom: var(--spacing-4xl);
+}
+
+.applications-page__title {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.applications-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.applications-page__card {
+  @include mixins.card-base;
+  padding: var(--spacing-3xl);
+}
+
+.applications-page__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.applications-page__card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+        &:hover {
+          color: var(--color-btn-secondary);
+        }
+  }
+}
+
+.applications-page__card-status {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.applications-page__card-status--pending {
+  background-color: var(--color-badge-yellow-bg);
+  color: var(--color-badge-yellow-text);
+}
+
+.applications-page__card-status--reviewed {
+  background-color: var(--color-badge-green-bg);
+  color: var(--color-badge-green-text);
+}
+
+.applications-page__card-status--accepted {
+  background-color: var(--color-badge-green-bg);
+  color: var(--color-badge-green-text);
+}
+
+.applications-page__card-status--rejected {
+  background-color: var(--color-badge-red-bg);
+  color: var(--color-badge-red-text);
+}
+
+.applications-page__card-company {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md);
+}
+
+.applications-page__card-match-score {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.applications-page__card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-md);
+  border-top: var(--border-width-thin) solid var(--color-border-default);
+}
+
+.applications-page__card-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.applications-page__card-link {
+  color: var(--color-btn-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.applications-page__loading,
+.applications-page__error,
+.applications-page__empty {
+  text-align: center;
+  padding: var(--spacing-8xl);
+  color: var(--color-text-secondary);
+}
+
+@include mixins.respond-to(mobile) {
+  .applications-page {
+    padding: var(--spacing-2xl);
+  }
+
+  .applications-page__card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+}

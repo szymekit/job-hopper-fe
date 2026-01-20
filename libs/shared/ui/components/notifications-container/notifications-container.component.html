@@ -1,0 +1,27 @@
+<div class="notifications-container" role="region" aria-live="polite" aria-label="Powiadomienia">
+  @for (notification of notifications(); track notification.id) {
+    <div
+      class="notification notification--{{ notification.type }}"
+      [attr.role]="notification.type === 'error' ? 'alert' : 'status'"
+      [attr.aria-live]="notification.type === 'error' ? 'assertive' : 'polite'"
+    >
+      <div class="notification__icon">
+        <mat-icon>{{ getIcon(notification.type) }}</mat-icon>
+      </div>
+      <div class="notification__content">
+        @if (notification.title) {
+          <div class="notification__title">{{ notification.title }}</div>
+        }
+        <div class="notification__message">{{ notification.message }}</div>
+      </div>
+      <button
+        type="button"
+        class="notification__close"
+        (click)="close(notification.id)"
+        aria-label="Zamknij powiadomienie"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+</div>

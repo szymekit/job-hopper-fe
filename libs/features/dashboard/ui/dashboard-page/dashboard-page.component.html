@@ -1,0 +1,39 @@
+<div class="dashboard-page">
+  <div class="dashboard-page__header">
+    <h1 class="dashboard-page__title">Dashboard</h1>
+  </div>
+
+  <div class="dashboard-page__content">
+    @if (authService.isEmployee()) {
+      <div class="dashboard-page__section">
+        <h2 class="dashboard-page__section-title">Szybkie akcje</h2>
+        <div class="dashboard-page__actions">
+          <a [routerLink]="['/app/applications']" class="dashboard-page__action-card">
+            <mat-icon>description</mat-icon>
+            <span>Moje aplikacje</span>
+          </a>
+          <a [routerLink]="['/app/saved-offers']" class="dashboard-page__action-card">
+            <mat-icon>bookmark</mat-icon>
+            <span>Zapisane oferty</span>
+          </a>
+          <a [routerLink]="['/app/followed-companies']" class="dashboard-page__action-card">
+            <mat-icon>business</mat-icon>
+            <span>Obserwowane firmy</span>
+          </a>
+        </div>
+      </div>
+    }
+
+    @if (authService.isRecruiter()) {
+      <div class="dashboard-page__section">
+        <h2 class="dashboard-page__section-title">Panel firmy</h2>
+        <div class="dashboard-page__actions">
+          <a [routerLink]="['/app/company/dashboard']" class="dashboard-page__action-card">
+            <mat-icon>dashboard</mat-icon>
+            <span>Dashboard firmy</span>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

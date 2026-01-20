@@ -1,0 +1,59 @@
+<div class="feed-page">
+  <div class="feed-page__header">
+    <h1 class="feed-page__title">Feed</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="feed-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="feed-page__error">{{ error() }}</div>
+  } @else {
+    <div class="feed-page__list">
+      @for (post of (posts() || []); track post.id) {
+        <article class="feed-page__post">
+          <div class="feed-page__post-header">
+            @if (post.author?.avatarUrl) {
+              <img
+                [src]="post.author!.avatarUrl!"
+                [alt]="post.author!.fullName || ''"
+                class="feed-page__post-avatar"
+              />
+            }
+            <div class="feed-page__post-author-info">
+              <h3 class="feed-page__post-author-name">{{ post.author?.fullName }}</h3>
+              @if (post.company) {
+                <p class="feed-page__post-company">{{ post.company.name }}</p>
+              }
+              <time class="feed-page__post-date">{{ formatDate(post.createdAt) }}</time>
+            </div>
+          </div>
+          <p class="feed-page__post-content">{{ post.content }}</p>
+          @if (post.imageUrl) {
+            <img [src]="post.imageUrl" [alt]="post.content" class="feed-page__post-image" />
+          }
+          <div class="feed-page__post-actions">
+            <button
+              mat-icon-button
+              class="feed-page__post-action"
+              [class.feed-page__post-action--active]="post.isLiked"
+              [attr.aria-label]="post.isLiked ? 'Usuń polubienie' : 'Polub'"
+              (click)="toggleLike(post)"
+            >
+              <mat-icon>{{ post.isLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <span class="feed-page__post-action-text">{{ post.likesCount }}</span>
+            </button>
+            <button
+              mat-icon-button
+              class="feed-page__post-action"
+              aria-label="Komentarze"
+              (click)="toggleComments(post.id)"
+            >
+              <mat-icon>comment</mat-icon>
+              <span class="feed-page__post-action-text">{{ post.commentsCount }}</span>
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,33 @@
+.match-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.match-score-badge--green {
+  background-color: var(--color-badge-green-bg);
+  color: var(--color-badge-green-text);
+}
+
+.match-score-badge--yellow {
+  background-color: var(--color-badge-yellow-bg);
+  color: var(--color-badge-yellow-text);
+}
+
+.match-score-badge--orange {
+  background-color: var(--color-badge-orange-bg);
+  color: var(--color-badge-orange-text);
+}
+
+.match-score-badge--red {
+  background-color: var(--color-badge-red-bg);
+  color: var(--color-badge-red-text);
+}
+
+.match-score-badge__percentage {
+  font-weight: var(--font-weight-bold);
+}

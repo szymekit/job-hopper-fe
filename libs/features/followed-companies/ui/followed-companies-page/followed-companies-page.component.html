@@ -1,0 +1,39 @@
+<div class="followed-companies-page">
+  <div class="followed-companies-page__header">
+    <h1 class="followed-companies-page__title">Obserwowane firmy</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="followed-companies-page__loading">Ładowanie...</div>
+  } @else if (error()) {
+    <div class="followed-companies-page__error">{{ error() }}</div>
+  } @else if (companies().length === 0) {
+    <div class="followed-companies-page__empty">
+      <mat-icon>business</mat-icon>
+      <p>Nie obserwujesz żadnych firm.</p>
+    </div>
+  } @else {
+    <div class="followed-companies-page__grid">
+      @for (followedCompany of companies(); track followedCompany.id) {
+        <a [routerLink]="['/company', followedCompany.companyId]" class="followed-companies-page__card">
+          @if (followedCompany.company?.logoUrl) {
+            <img
+              [src]="followedCompany.company!.logoUrl!"
+              [alt]="followedCompany.company!.name || ''"
+              class="followed-companies-page__card-logo"
+            />
+          }
+          <div class="followed-companies-page__card-info">
+            <h3 class="followed-companies-page__card-title">{{ followedCompany.company?.name }}</h3>
+            @if (followedCompany.company?.tagline) {
+              <p class="followed-companies-page__card-tagline">{{ followedCompany.company!.tagline! }}</p>
+            }
+            @if (followedCompany.company?.location) {
+              <p class="followed-companies-page__card-location">{{ followedCompany.company!.location! }}</p>
+            }
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

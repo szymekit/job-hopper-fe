@@ -1,16 +1,29 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import {
   EmployeeRegistrationFormGroup,
   EmployeeRegistrationFormValue,
   EmployeeRegistrationUiState,
 } from '@features/employee-registration/model/employee-registration.model';
+import { AuthApiService } from '@shared/api/services/auth-api.service';
+import { AuthService } from '@core/services/auth.service';
+import { RealtimeService } from '@core/services/realtime.service';
+import { NotificationsService } from '@core/services/notifications.service';
+import { errorToMessage } from '@shared/util/error-to-message';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeRegistrationFacade {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly authApi = inject(AuthApiService);
+  private readonly authService = inject(AuthService);
+  private readonly realtimeService = inject(RealtimeService);
+  private readonly router = inject(Router);
+  private readonly notifications = inject(NotificationsService);
 
   readonly form: EmployeeRegistrationFormGroup = this.formBuilder.nonNullable.group({
     email: this.formBuilder.nonNullable.control('', {
@@ -53,13 +66,41 @@ export class EmployeeRegistrationFacade {
       submitError: null,
     }));
 
-    setTimeout(() => {
-      this.uiState.update((state) => ({
-        ...state,
-        submitting: false,
-        submitSuccess: true,
-      }));
-    }, 600);
+    this.authApi
+      .register({
+        email: value.email,
+        password: value.password,
+        role: 'EMPLOYEE',
+        marketingConsent: value.acceptMarketing,
+      })
+      .pipe(
+        tap((response) => {
+          this.authService.setToken(response.accessToken);
+          this.authService.setUser(response.user);
+          this.realtimeService.connect();
+          this.uiState.update((state) => ({
+            ...state,
+            submitting: false,
+            submitSuccess: true,
+            submitError: null,
+          }));
+          setTimeout(() => {
+            this.router.navigate(['/app/dashboard']);
+          }, 500);
+        }),
+        catchError((error) => {
+          const errorMessage =
+            error.status === 409
+              ? 'Użytkownik o podanym adresie email już istnieje.'
+              : 'Nie udało się utworzyć konta. Spróbuj ponownie.';
+          this.uiState.update((state) => ({
+            ...state,
+            submitting: false,
+            submitError: errorMessage,
+          }));
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 }
-

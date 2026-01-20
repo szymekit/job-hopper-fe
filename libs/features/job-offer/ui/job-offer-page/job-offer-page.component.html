@@ -1,108 +1,106 @@
 <div class="job-offer-page">
-  <header class="job-offer-page__header">
-    <div class="job-offer-page__header-content">
-      <div class="job-offer-page__logo">
-        <div class="job-offer-page__logo-icon">a</div>
-      </div>
-      <nav class="job-offer-page__nav">
-        <a href="#" class="job-offer-page__nav-link job-offer-page__nav-link--active">Blocks</a>
-        <a href="#" class="job-offer-page__nav-link">Documentation</a>
-        <a href="#" class="job-offer-page__nav-link">Pricing</a>
-      </nav>
-      <div class="job-offer-page__header-right">
-        <button class="job-offer-page__icon-btn">
-          <mat-icon>light_mode</mat-icon>
-        </button>
-        <button class="job-offer-page__icon-btn">
-          <mat-icon>help_outline</mat-icon>
-        </button>
-        <a href="/login" class="job-offer-page__btn job-offer-page__btn--text">Zaloguj się</a>
-        <a href="/register/business" class="job-offer-page__btn job-offer-page__btn--primary">Konto biznes</a>
-      </div>
-    </div>
-  </header>
-
   <main class="job-offer-page__main">
     <div class="job-offer-page__container">
-      <article class="job-offer-card">
-        <div class="job-offer-card__header">
-          <img class="job-offer-card__logo" [src]="data().details.header.logoUrl" [alt]="data().details.header.companyName" />
-          <div class="job-offer-card__info">
-            <h1 class="job-offer-card__title">{{ data().details.title }}</h1>
-            <div class="job-offer-card__meta">
-              <span>{{ data().details.header.companyName }} {{ data().details.header.location }}</span>
-              <span>{{ data().details.salary }}</span>
-              <span>{{ data().details.activeDays }}</span>
+      @if (loading()) {
+        <div>Ładowanie...</div>
+      } @else if (error()) {
+        <div>Błąd: {{ error() }}</div>
+      } @else if (data()) {
+        <article class="job-offer-card">
+          <div class="job-offer-card__header">
+            <img class="job-offer-card__logo" [src]="data()!.details.header.logoUrl" [alt]="data()!.details.header.companyName" />
+            <div class="job-offer-card__info">
+              <h1 class="job-offer-card__title">{{ data()!.details.title }}</h1>
+              <div class="job-offer-card__meta">
+                <span>{{ data()!.details.header.companyName }} {{ data()!.details.header.location }}</span>
+                <span>{{ data()!.details.salary }}</span>
+                <span>{{ data()!.details.activeDays }}</span>
+              </div>
+              <p class="job-offer-card__description">{{ data()!.details.description }}</p>
+              <div class="job-offer-card__tags">
+                @for (tag of data()!.details.tags; track tag) {
+                  <span class="job-offer-card__tag">{{ tag }}</span>
+                }
+              </div>
             </div>
-            <p class="job-offer-card__description">{{ data().details.description }}</p>
-            <div class="job-offer-card__tags">
-              @for (tag of data().details.tags; track tag) {
-                <span class="job-offer-card__tag">{{ tag }}</span>
+          </div>
+        </article>
+
+        @if (data()!.about.items && data()!.about.items.length > 0) {
+          <section class="job-offer-section">
+            <h2 class="job-offer-section__title">{{ data()!.about.title }}</h2>
+            <ul class="job-offer-section__list">
+              @for (item of data()!.about.items; track $index) {
+                <li class="job-offer-section__item">{{ item }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (data()!.competencies.items && data()!.competencies.items.length > 0) {
+          <section class="job-offer-section">
+            <h2 class="job-offer-section__title">{{ data()!.competencies.title }}</h2>
+            <ul class="job-offer-section__list">
+              @for (item of data()!.competencies.items; track $index) {
+                <li class="job-offer-section__item">{{ item }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (data()!.benefits.items && data()!.benefits.items.length > 0) {
+          <section class="job-offer-section">
+            <h2 class="job-offer-section__title">{{ data()!.benefits.title }}</h2>
+            <ul class="job-offer-section__list">
+              @for (item of data()!.benefits.items; track $index) {
+                <li class="job-offer-section__item">{{ item }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (data()!.skills.skills && data()!.skills.skills.length > 0) {
+          <section class="job-offer-section">
+            <h2 class="job-offer-section__title">Wymagane umiejętności</h2>
+            <div class="job-offer-section__skills">
+              @for (skill of data()!.skills.skills; track skill) {
+                <span class="job-offer-section__skill">{{ skill }}</span>
               }
             </div>
-          </div>
-        </div>
-      </article>
-
-      <section class="job-offer-section">
-        <h2 class="job-offer-section__title">{{ data().about.title }}</h2>
-        <div class="job-offer-section__subtitle">Zadania</div>
-        <ul class="job-offer-section__list">
-          @for (item of data().about.items; track $index) {
-            <li class="job-offer-section__item">{{ item }}</li>
-          }
-        </ul>
-      </section>
-
-      <section class="job-offer-section">
-        <h2 class="job-offer-section__title">{{ data().competencies.title }}</h2>
-        <ul class="job-offer-section__list">
-          @for (item of data().competencies.items; track $index) {
-            <li class="job-offer-section__item">{{ item }}</li>
-          }
-        </ul>
-      </section>
-
-      <section class="job-offer-section">
-        <h2 class="job-offer-section__title">{{ data().benefits.title }}</h2>
-        <ul class="job-offer-section__list">
-          @for (item of data().benefits.items; track $index) {
-            <li class="job-offer-section__item">{{ item }}</li>
-          }
-        </ul>
-      </section>
-
-      <section class="job-offer-section">
-        <h2 class="job-offer-section__title">Wymagane umiejętności</h2>
-        <div class="job-offer-section__skills">
-          @for (skill of data().skills.skills; track skill) {
-            <span class="job-offer-section__skill">{{ skill }}</span>
-          }
-        </div>
-      </section>
-
-      <section class="job-offer-section">
-        <h2 class="job-offer-section__title">Lokalizacja miejsca pracy</h2>
-        @if (mapsLoaded()) {
-          <div class="job-offer-section__map">
-            <google-map
-              [options]="mapOptions()"
-              width="100%"
-              height="400px"
-            >
-              <map-marker
-                [position]="markerPosition()"
-                [options]="markerOptions()"
-              ></map-marker>
-            </google-map>
-          </div>
-        } @else {
-          <div class="job-offer-section__map-placeholder">
-            <span>Ładowanie mapy...</span>
-          </div>
+          </section>
         }
-        <p class="job-offer-section__address">{{ data().location.address }}</p>
-      </section>
+
+        @if (data() && (data()!.location.address || (data()!.location.latitude && data()!.location.longitude))) {
+          <section class="job-offer-section">
+            <h2 class="job-offer-section__title">Lokalizacja miejsca pracy</h2>
+            @if (mapsLoaded$ | async) {
+              @if (data() && data()!.location.latitude && data()!.location.longitude) {
+                <div class="job-offer-section__map">
+                  <google-map
+                    [options]="mapOptions()"
+                    width="100%"
+                    height="400px"
+                  >
+                    <map-marker
+                      [position]="markerPosition()"
+                      [options]="markerOptions()"
+                    ></map-marker>
+                  </google-map>
+                </div>
+              }
+            } @else {
+              @if (data() && data()!.location.latitude && data()!.location.longitude) {
+                <div class="job-offer-section__map-placeholder">
+                  <span>Ładowanie mapy...</span>
+                </div>
+              }
+            }
+            @if (data() && data()!.location.address) {
+              <p class="job-offer-section__address">{{ data()!.location.address }}</p>
+            }
+          </section>
+        }
+      }
     </div>
   </main>
 </div>

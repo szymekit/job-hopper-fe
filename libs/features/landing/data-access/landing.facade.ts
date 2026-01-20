@@ -1,10 +1,16 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { catchError, of } from 'rxjs';
+import { OffersApiService } from '@shared/api/services/offers-api.service';
 import { LandingData } from '@features/landing/model/landing.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LandingFacade {
+  private readonly offersApi = inject(OffersApiService);
+
+  readonly loading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
   readonly data = signal<LandingData>({
     hero: {
       badge: 'Dołącz do 4000 użytkowników',
@@ -42,89 +48,7 @@ export class LandingFacade {
         color: 'purple',
       },
     ],
-    jobOffers: [
-      {
-        id: 'job-1',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-2',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-3',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: false,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-4',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-5',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-6',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: false,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-7',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-8',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: false,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-      {
-        id: 'job-9',
-        logoUrl: '/assets/vw-logo.png',
-        title: 'Montażysta',
-        location: 'Warszawa',
-        rate: '120 zł/godz.',
-        isPopular: true,
-        tags: ['B2B', 'UoP', 'Stacjo'],
-      },
-    ],
+    jobOffers: [],
     steps: [
       {
         id: 'step-1',
@@ -273,4 +197,38 @@ export class LandingFacade {
       copyright: '© 2025 JobHoope',
     },
   });
+
+  loadJobOffers(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.offersApi
+      .getAll({ limit: 9 })
+      .pipe(
+        catchError((error) => {
+          this.error.set('Nie udało się załadować ofert pracy.');
+          this.loading.set(false);
+          return of([]);
+        })
+      )
+      .subscribe((offers) => {
+        this.loading.set(false);
+        const mappedOffers = offers.map((offer) => ({
+          id: offer.id,
+          logoUrl: offer.company?.logoUrl || '',
+          title: offer.title,
+          location: offer.location,
+          rate: offer.salaryFrom ? `${offer.salaryFrom} ${offer.currency || 'zł'}/godz.` : '',
+          isPopular: false,
+          tags: Array.isArray(offer.tags)
+            ? offer.tags.map((tag: any) => (typeof tag === 'string' ? tag : tag?.name || '')).filter((t: string) => t)
+            : [],
+        }));
+
+        this.data.update((current) => ({
+          ...current,
+          jobOffers: mappedOffers,
+        }));
+      });
+  }
 }

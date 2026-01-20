@@ -1,0 +1,82 @@
+<div class="app-layout">
+  <header class="app-layout__header">
+    <div class="app-layout__header-left">
+      <a [routerLink]="['/app/dashboard']" class="app-layout__logo">
+        <span class="app-layout__logo-text">JobHopper</span>
+      </a>
+      <nav class="app-layout__nav">
+        @for (item of menuItems(); track item.route) {
+          <a
+            [routerLink]="[item.route]"
+            routerLinkActive="app-layout__nav-item--active"
+            class="app-layout__nav-item"
+          >
+            <mat-icon class="app-layout__nav-icon">{{ item.icon }}</mat-icon>
+            <span class="app-layout__nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+    </div>
+    <div class="app-layout__header-right">
+      <button
+        class="app-layout__header-action"
+        (click)="toggleChat()"
+        [class.app-layout__header-action--active]="chatOpen()"
+        aria-label="Chat"
+      >
+        <mat-icon>chat</mat-icon>
+        @if (chatOpen() === false) {
+          <span class="app-layout__badge">1</span>
+        }
+      </button>
+      <button
+        class="app-layout__header-action"
+        (click)="openNotifications()"
+        aria-label="Powiadomienia"
+      >
+        <mat-icon>notifications</mat-icon>
+        @if (unreadCount() > 0) {
+          <span class="app-layout__badge">{{ unreadCount() }}</span>
+        }
+      </button>
+      <div class="app-layout__user-menu">
+        @if (currentUser()) {
+          <button class="app-layout__user-button" (click)="toggleUserMenu($event)">
+            @if (currentUser()!.avatarUrl) {
+              <img
+                [src]="currentUser()!.avatarUrl"
+                [alt]="currentUser()!.fullName || 'User'"
+                class="app-layout__user-avatar"
+              />
+            } @else {
+              <div class="app-layout__user-avatar-placeholder">
+                {{ (currentUser()!.fullName || currentUser()!.email || 'U')[0].toUpperCase() }}
+              </div>
+            }
+            <span class="app-layout__user-name">{{ currentUser()!.fullName || currentUser()!.email }}</span>
+            <mat-icon class="app-layout__user-icon">arrow_drop_down</mat-icon>
+          </button>
+        }
+        @if (userMenuOpen()) {
+          <div class="app-layout__user-dropdown">
+            <button class="app-layout__user-dropdown-item" (click)="goToProfile()">
+              <mat-icon>person</mat-icon>
+              <span>Profil</span>
+            </button>
+            <button class="app-layout__user-dropdown-item" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Wyloguj</span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="app-layout__main">
+    <router-outlet />
+  </main>
+
+  <jh-chat />
+  <jh-notifications-container />
+</div>
